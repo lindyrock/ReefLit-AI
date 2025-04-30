@@ -1,0 +1,43 @@
+name: "🚀 Feature Request"
+description: "Suggest an idea or enhancement."
+labels: [enhancement]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an idea to improve ReefLit AI!
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "🌟 Motivation"
+      description: "What problem does this feature solve?"
+      placeholder: "Ex: Keeping the dashboard up-to-date with new reef stressor categories."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "💡 Proposed solution"
+      description: "Describe the feature in detail and any alternatives you have considered."
+      placeholder: "Ex: Add a dropdown to filter papers by symbiont clade."
+    validations:
+      required: true
+  - type: input
+    id: related
+    attributes:
+      label: "🔗 Related issues or PRs"
+      description: "List any relevant links"
+      placeholder: "#42, #77"
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: "⚙️ Complexity estimate"
+      options:
+        - "XS (1-3h)"
+        - "S (4-8h)"
+        - "M (1-3d)"
+        - "L (1+ week)"
+    validations:
+      required: false
+
