@@ -30,11 +30,11 @@
 
 ```bash
 # Clone
-$ git clone https://github.com/your‑handle/ReefLit‑AI.git
+$ git clone https://github.com/lindyrock/ReefLit‑AI.git
 $ cd ReefLit‑AI
 
 # Create env (conda or venv)
-$ conda env create ‑f env.yml && conda activate reeflit
+$ conda env create ‑f environment.yml && conda activate reeflit
 
 # Run pipeline locally
 $ python pipeline/fetch_and_label.py

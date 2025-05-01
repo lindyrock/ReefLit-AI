@@ -1,0 +1,112 @@
+# stressors.yml  ▸ ReefLit AI
+# Keyword lists (case-insensitive) used to tag abstracts.
+# You can extend or tweak without touching code.
+
+warming_bleaching:
+  - thermal stress
+  - sea surface temperature
+  - SST anomaly
+  - marine heatwave
+  - bleaching
+  - mass bleaching
+  - warm-water event
+  - El Niño
+  - degree heating week
+  - DHW
+
+acidification:
+  - ocean acidification
+  - pH decline
+  - aragonite saturation
+  - Ω_aragonite
+  - carbonate chemistry
+  - CO2 enrichment
+  - elevated pCO2
+  - reduced alkalinity
+  - acidified seawater
+
+nutrients_eutrophication:
+  - eutrophication
+  - nutrient enrichment
+  - nitrogen loading
+  - phosphorus loading
+  - agricultural runoff
+  - fertilizer runoff
+  - sewage discharge
+  - chlorophyll-a bloom
+  - algal bloom
+
+storms_cyclones:
+  - cyclone
+  - hurricane
+  - typhoon
+  - storm damage
+  - wave energy
+  - storm surge
+  - physical breakage
+  - post-storm recovery
+
+disease:
+  - coral disease
+  - white band
+  - black band
+  - stony coral tissue
+  - SCTLD
+  - bleaching-related disease
+  - pathogen infection
+  - bacterial disease
+  - fungal disease
+  - Vibrio
+
+crown_of_thorns:
+  - crown-of-thorns
+  - Acanthaster
+  - COTS outbreak
+  - starfish predation
+
+pollution:
+  - sedimentation
+  - turbidity
+  - plastic debris
+  - microplastics
+  - oil spill
+  - hydrocarbon
+  - heavy metal
+  - copper contamination
+  - pesticide
+  - PCB
+  - chemical pollutant
+
+fishing:
+  - overfishing
+  - destructive fishing
+  - blast fishing
+  - cyanide fishing
+  - gear damage
+  - anchor damage
+  - spearfishing pressure
+  - herbivore depletion
+
+socioeconomic:
+  - tourism pressure
+  - coastal development
+  - shoreline modification
+  - dredging
+  - port expansion
+  - population growth
+  - socioeconomic driver
+  - governance
+  - compliance
+  - community-based management
+
+restoration_genetics:
+  - coral gardening
+  - outplanting
+  - transplantation
+  - assisted evolution
+  - selective breeding
+  - heat-tolerant symbiont
+  - probiotic
+  - microfragmentation
+  - artificial reef
+  - larval propagation
