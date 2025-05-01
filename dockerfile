@@ -1,0 +1,27 @@
+# ---------- ReefLit AI nightly pipeline image ----------
+    FROM mambaorg/micromamba:1.5.5
+
+    # 1. Create working dir
+    WORKDIR /app
+    
+    # 2. Copy env & install
+    COPY environment.yml .
+    RUN micromamba install --yes --file environment.yml \
+     && micromamba clean --all --yes
+    
+    # 3. Copy source, configs, data folder stub
+    COPY src/     src/
+    COPY config/  config/
+    COPY data/    data/
+    COPY index/   index/
+    COPY stressors.yml config/stressors.yml  # in case user kept old path
+    
+    # 4. Entrypoint that re-runs full pipeline
+    ENTRYPOINT ["/bin/bash", "-c", "\
+      python src/fetch_corpus.py --outfile data/coral_corpus.jsonl && \
+      python src/weak_label.py   --input  data/coral_corpus.jsonl \
+                                 --output data/corpus_labeled.jsonl && \
+      python src/build_index.py  --input  data/corpus_labeled.jsonl && \
+      echo '🏁  Pipeline finished inside container' \
+    "]
+    

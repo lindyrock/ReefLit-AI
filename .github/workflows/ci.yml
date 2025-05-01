@@ -5,10 +5,13 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  # Nightly run to keep the living meta-analysis fresh
+  # Nightly cron-job keeps the living meta-analysis fresh
   schedule:
-    - cron: '0 5 * * *'  # 05:00 UTC (~midnight US ET)
+    - cron: '0 5 * * *'   # 05:00 UTC daily
 
+# ---------------------------------------------------------------------- #
+# 1) Basic lint / unit-test stage
+# ---------------------------------------------------------------------- #
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -20,44 +23,50 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install core dev deps
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          # Minimal core libs for pipeline skeleton
-          pip install spacy==3.* sentence-transformers==2.* faiss-cpu==1.* pytest
+          pip install pytest
 
       - name: Run unit tests (if any)
         run: |
-          if [ -d tests ]; then pytest -q; else echo "No tests directory yet – skipping."; fi
+          if [ -d tests ]; then
+            pytest -q
+          else
+            echo "No tests yet – skipping."
+          fi
 
-      - name: Build FAISS index (nightly only)
-        if: github.event_name == 'schedule'
-        run: python src/build_index.py --input data/corpus_labeled.jsonl
-
-
+# ---------------------------------------------------------------------- #
+# 2) Nightly end-to-end pipeline in Docker
+# ---------------------------------------------------------------------- #
   nightly-pipeline:
     needs: build-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule'          # ← only cron triggers
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Build pipeline Docker image
+        run: docker build -t reeflit-pipeline .
+
+      - name: Run pipeline container (fetch → label → index)
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/data:/app/data \
+            -v ${{ github.workspace }}/index:/app/index \
+            reeflit-pipeline
+
+      - name: Upload nightly artifacts
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.10'
-
-      - name: Install pipeline dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-
-      - name: Run ingest script
-        run: |
-          python scripts/ingest.py || echo "Ingest script placeholder – implement later."
-
+          name: reeflit-data
+          path: |
+            data/coral_corpus.jsonl
+            data/corpus_labeled.jsonl
+            index/reeflit.faiss
+            index/metadata.pkl
