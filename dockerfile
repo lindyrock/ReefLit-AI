@@ -1,27 +1,31 @@
-# ---------- ReefLit AI nightly pipeline image ----------
-    FROM mambaorg/micromamba:1.5.5
+# ---------- ReefLit AI • Streamlit dashboard image ----------
+    FROM python:3.11-slim
 
-    # 1. Create working dir
+    # 1. System deps
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+            build-essential gcc git && \
+        rm -rf /var/lib/apt/lists/*
+    
+    # 2. Create app dir & copy minimal files
     WORKDIR /app
+    COPY requirements.txt .          # if you have one
+    COPY environment.yml  .          # fallback
+    COPY src/      src/
+    COPY config/   config/
+    COPY index/    index/
+    COPY data/     data/
     
-    # 2. Copy env & install
-    COPY environment.yml .
-    RUN micromamba install --yes --file environment.yml \
-     && micromamba clean --all --yes
+    # 3. Install Python deps (use pip for speed)
+    # Either use requirements.txt or pip-install from environment.yml
+    RUN pip install -U pip && \
+        if [ -f requirements.txt ]; then \
+            pip install -r requirements.txt; \
+        else \
+            pip install streamlit sentence-transformers faiss-cpu plotly pyyaml; \
+        fi
     
-    # 3. Copy source, configs, data folder stub
-    COPY src/     src/
-    COPY config/  config/
-    COPY data/    data/
-    COPY index/   index/
-    COPY stressors.yml config/stressors.yml  # in case user kept old path
-    
-    # 4. Entrypoint that re-runs full pipeline
-    ENTRYPOINT ["/bin/bash", "-c", "\
-      python src/fetch_corpus.py --outfile data/coral_corpus.jsonl && \
-      python src/weak_label.py   --input  data/coral_corpus.jsonl \
-                                 --output data/corpus_labeled.jsonl && \
-      python src/build_index.py  --input  data/corpus_labeled.jsonl && \
-      echo '🏁  Pipeline finished inside container' \
-    "]
+    # 4. Expose port & cmd
+    ENV PORT 8080
+    EXPOSE 8080
+    CMD ["streamlit", "run", "src/dashboard.py", "--server.port", "8080", "--server.address", "0.0.0.0", "--server.enableCORS", "false"]
     
