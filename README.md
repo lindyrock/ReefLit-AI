@@ -60,13 +60,13 @@ The dashboard appears at **http://localhost:8050**.
 ReefLit‑AI/
 ├── app/                # Dash interface
 ├── pipelines/          # Ingest, label, embed scripts
-├── taxonomy/           # yaml files of stressor keywords
+├── config/             # Taxonomy and configuration files
 ├── data/               # JSONL corpora, FAISS index (git‑ignored)
 ├── docs/               # Additional docs / images
-├── reeflit/            # lib code (models, utils)
+├── src/                # lib code (models, utils)
 ├── tests/              # pytest suite
 ├── Dockerfile
-└── env.yml             # Conda environment
+└── environment.yml             # Conda environment
 ```
 
 ---
