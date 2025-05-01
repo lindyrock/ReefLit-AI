@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build pipeline Docker image
-        run: docker build -t reeflit-pipeline .
+        run: docker build -f Dockerfile.pipeline -t reeflit-pipeline .
 
       - name: Run pipeline container (fetch → label → index)
         run: |
