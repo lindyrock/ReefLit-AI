@@ -32,6 +32,8 @@ dependencies:
   - plotly
   - dash
   - graphviz
+  - streamlit
+
 
   # Dev & Testing
   - pytest
