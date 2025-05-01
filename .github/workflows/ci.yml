@@ -33,6 +33,11 @@ jobs:
         run: |
           if [ -d tests ]; then pytest -q; else echo "No tests directory yet – skipping."; fi
 
+      - name: Build FAISS index (nightly only)
+        if: github.event_name == 'schedule'
+        run: python src/build_index.py --input data/corpus_labeled.jsonl
+
+
   nightly-pipeline:
     needs: build-test
     runs-on: ubuntu-latest
