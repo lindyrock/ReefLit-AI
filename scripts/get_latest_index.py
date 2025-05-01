@@ -38,6 +38,8 @@ def download_and_extract(url):
     z = zipfile.ZipFile(io.BytesIO(r.content))
     z.extractall(".")
     logging.info("✓ Extracted files: %s", z.namelist())
+    logging.info("✅ Fetched latest artifact from %s", run_id)
+
 
 if __name__ == "__main__":
     url = get_latest_artifact_url()
