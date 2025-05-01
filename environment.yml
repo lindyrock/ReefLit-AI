@@ -1,0 +1,48 @@
+# ReefLit AI Conda/Mamba environment
+#
+# Create with:
+#   mamba env create -f environment.yml
+# Activate with:
+#   mamba activate reeflit
+#
+name: reeflit
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core
+  - python=3.11
+  - pip
+
+  # Fetching & Requests
+  - requests
+  - tqdm
+
+  # Data / Parsing
+  - pandas
+  - lxml  # needed if later we scrape HTML
+  - python-dateutil
+
+  # NLP & Embeddings (pipeline later stages)
+  - sentence-transformers
+  - spacy
+  - faiss-cpu
+
+  # Dashboard / Viz (pipeline later stages)
+  - plotly
+  - dash
+  - graphviz
+
+  # Dev & Testing
+  - pytest
+  - pytest-cov
+  - black
+  - isort
+  - pre-commit
+
+  # Optional: install LangChain + other extras via pip
+  - pip:
+      - langchain
+      - duckduckgo-search
+      - scispacy
+

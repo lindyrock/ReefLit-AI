@@ -19,7 +19,7 @@
 
 ```bash
 # fork + clone
-$ git clone https://github.com/<your-handle>/ReefLit-AI.git
+$ git clone https://github.com/lindyrock/ReefLit-AI.git
 $ cd ReefLit-AI
 
 # conda env (preferred)

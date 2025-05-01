@@ -1,2 +1,12 @@
-# Auto detect text files and perform LF normalization
+# Ensure consistent line endings & diff behaviour
 * text=auto
+
+# Treat common binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+
+# Optional: easier diffs for Jupyter notebooks (if added later)
+#*.ipynb filter=jupytext
+
