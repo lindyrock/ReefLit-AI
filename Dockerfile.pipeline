@@ -12,9 +12,6 @@
     # 3. Copy source, configs, data folder stub
     COPY src/     src/
     COPY config/  config/
-    COPY data/    data/
-    COPY index/   index/
-    COPY stressors.yml config/stressors.yml  # in case user kept old path
     
     # 4. Entrypoint that re-runs full pipeline
     ENTRYPOINT ["/bin/bash", "-c", "\

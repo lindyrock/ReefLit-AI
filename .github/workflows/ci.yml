@@ -8,6 +8,7 @@ on:
   # Nightly cron-job keeps the living meta-analysis fresh
   schedule:
     - cron: '0 5 * * *'   # 05:00 UTC daily
+  workflow_dispatch: 
 
 # ---------------------------------------------------------------------- #
 # 1) Basic lint / unit-test stage
@@ -36,7 +37,7 @@ jobs:
           if [ -d tests ]; then
             pytest -q
           else
-            echo "No tests yet – skipping."
+            echo "No tests yet - skipping."
           fi
 
 # ---------------------------------------------------------------------- #
