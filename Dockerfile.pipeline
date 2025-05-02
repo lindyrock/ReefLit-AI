@@ -15,10 +15,9 @@
     
     # 4. Entrypoint that re-runs full pipeline
     ENTRYPOINT ["/bin/bash", "-c", "\
-      python src/fetch_corpus.py --outfile data/coral_corpus.jsonl && \
-      python src/weak_label.py   --input  data/coral_corpus.jsonl \
-                                 --output data/corpus_labeled.jsonl && \
-      python src/build_index.py  --input  data/corpus_labeled.jsonl && \
-      echo '🏁  Pipeline finished inside container' \
-    "]
+      micromamba run -n reeflit python src/fetch_corpus.py --outfile data/coral_corpus.jsonl && \
+      micromamba run -n reeflit python src/weak_label.py   --input  data/coral_corpus.jsonl --output data/corpus_labeled.jsonl && \
+      micromamba run -n reeflit python src/build_index.py  --input  data/corpus_labeled.jsonl && \
+      echo '🏁  Pipeline finished inside container'"]
+
     
