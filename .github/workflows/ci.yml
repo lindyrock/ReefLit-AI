@@ -58,7 +58,8 @@ jobs:
 
       - name: Run pipeline container (fetch → label → index)
         run: |
-          docker run --rm \
+          docker run --rm 
+            --user root \
             -v ${{ github.workspace }}/data:/app/data \
             -v ${{ github.workspace }}/index:/app/index \
             reeflit-pipeline
