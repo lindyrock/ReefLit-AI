@@ -2,5 +2,6 @@
 .github/
 data/
 index/
+pdfs/
 *.ipynb
 env/
