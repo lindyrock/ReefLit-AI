@@ -1,4 +1,4 @@
-# ReefLit AI Conda/Mamba environment
+# ReefLit AI Conda/Mamba environment
 #
 # Create with:
 #   mamba env create -f environment.yml
@@ -47,4 +47,5 @@ dependencies:
       - langchain
       - duckduckgo-search
       - scispacy
+      - pdfminer.six  # PDF text extraction
 
