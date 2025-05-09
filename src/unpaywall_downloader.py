@@ -4,9 +4,10 @@ import time
 import logging
 import requests
 from pathlib import Path
-from typing import Optional, List, Set
+from typing import Optional, List, Set, Dict
 from urllib.parse import urlparse
 from tqdm import tqdm
+from utils import doi_to_filename
 
 # Set up logging
 logging.basicConfig(
@@ -70,51 +71,45 @@ def get_pdf_urls(data: dict) -> List[str]:
     
     return list(dict.fromkeys(urls))  # Remove duplicates while preserving order
 
-def download_pdf(url: str, output_path: Path, max_retries: int = 3) -> bool:
-    """
-    Download a PDF from a given URL with retries.
+def download_pdf(doi: str, output_dir: str = "pdfs") -> Optional[str]:
+    """Download PDF for a given DOI using Unpaywall API."""
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
     
-    Args:
-        url: URL of the PDF to download
-        output_path: Path where to save the PDF
-        max_retries: Maximum number of retry attempts
+    # Convert DOI to filename
+    filename = doi_to_filename(doi)
+    output_path = os.path.join(output_dir, f"{filename}.pdf")
     
-    Returns:
-        bool: True if download successful, False otherwise
-    """
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    # Skip if already downloaded
+    if os.path.exists(output_path):
+        logging.info(f"PDF already exists for {doi}")
+        return output_path
     
-    for attempt in range(max_retries):
-        try:
-            response = requests.get(url, stream=True, headers=headers, timeout=30)
-            response.raise_for_status()
-            
-            # Check if we got a PDF
-            content_type = response.headers.get('content-type', '').lower()
-            if 'application/pdf' not in content_type and not url.endswith('.pdf'):
-                logging.warning(f"Response from {url} doesn't appear to be a PDF (content-type: {content_type})")
-                return False
-            
-            with open(output_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            
-            # Verify the file is not empty
-            if output_path.stat().st_size == 0:
-                logging.warning(f"Downloaded file is empty from {url}")
-                return False
-                
-            return True
-            
-        except requests.exceptions.RequestException as e:
-            logging.warning(f"Attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)  # Exponential backoff
-            continue
+    # Query Unpaywall
+    data = get_unpaywall_data(doi, "rauchstar23@yahoo.com")
+    if not data:
+        return None
     
-    return False
+    # Check if OA PDF is available
+    if not data.get('is_oa'):
+        logging.info(f"No OA version available for DOI: {doi}")
+        return None
+    
+    # Get all possible PDF URLs
+    pdf_urls = get_pdf_urls(data)
+    if not pdf_urls:
+        logging.info(f"No PDF URLs found for DOI: {doi}")
+        return None
+    
+    # Try each URL until one works
+    for url in pdf_urls:
+        logging.info(f"Trying to download from: {url}")
+        if download_pdf(url, output_dir):
+            logging.info(f"Successfully downloaded PDF for DOI: {doi}")
+            return output_path
+    
+    logging.warning(f"Failed to download PDF for DOI: {doi} after trying all URLs")
+    return None
 
 def process_doi(doi: str, email: str, output_dir: Path) -> bool:
     """
@@ -151,7 +146,7 @@ def process_doi(doi: str, email: str, output_dir: Path) -> bool:
     # Try each URL until one works
     for url in pdf_urls:
         logging.info(f"Trying to download from: {url}")
-        if download_pdf(url, output_path):
+        if download_pdf(url, output_dir):
             logging.info(f"Successfully downloaded PDF for DOI: {doi}")
             return True
     

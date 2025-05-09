@@ -22,6 +22,7 @@ dependencies:
   - pandas
   - lxml  # needed if later we scrape HTML
   - python-dateutil
+  - pyyaml  # YAML file handling
 
   # NLP & Embeddings (pipeline later stages)
   - sentence-transformers

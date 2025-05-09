@@ -1,0 +1,320 @@
+# Statistical Effect Size and Test Statistic Patterns
+# These patterns are designed to be used with spaCy's Matcher
+# Format: Each pattern is a list of dictionaries, where each dict represents a token
+
+patterns:
+  # P-values
+  p_value:
+    - pattern: |
+        [
+          {"LOWER": "p"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": {"IN": ["<", "\\", "=", ">"]}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "P-value (e.g., p < 0.05)"
+    
+    - pattern: |
+        [
+          {"TEXT": {"REGEX": "^[Pp]$"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": {"IN": ["<", "\\", "=", ">"]}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": {"REGEX": "^0?\\.\\d+$"}}
+        ]
+      description: "P-value with decimal (e.g., p < .001)"
+
+  # T-statistics
+  t_stat:
+    - pattern: |
+        [
+          {"LOWER": "t"},
+          {"TEXT": "("},
+          {"IS_DIGIT": true},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "T-statistic with degrees of freedom (e.g., t(23) = 2.45)"
+    
+    - pattern: |
+        [
+          {"LOWER": "t"},
+          {"TEXT": "("},
+          {"IS_DIGIT": true},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "T-statistic with degrees of freedom (e.g., t(23) = 2.45)"
+    
+    - pattern: |
+        [
+          {"TEXT": {"REGEX": "t\\(\\d+"}},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "T-statistic with degrees of freedom (e.g., t(23) = 2.45)"
+
+  # F-statistics
+  f_stat:
+    - pattern: |
+        [
+          {"LOWER": "f"},
+          {"TEXT": "("},
+          {"IS_DIGIT": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"IS_DIGIT": true},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "F-statistic with degrees of freedom (e.g., F(2, 45) = 3.21)"
+    
+    - pattern: |
+        [
+          {"TEXT": {"REGEX": "F\\(\\d+"}},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"IS_DIGIT": true},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "F-statistic with degrees of freedom (e.g., F(2, 45) = 3.21)"
+
+  # Chi-square statistics
+  chi_square:
+    - pattern: |
+        [
+          {"TEXT": {"REGEX": "χ2\\(\\d+"}},
+          {"TEXT": ")"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "Chi-square statistic (e.g., χ2(3) = 8.76)"
+
+  # Correlation coefficients
+  correlation:
+    - pattern: |
+        [
+          {"LOWER": {"REGEX": "pearson|spearman|kendall"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "correlation"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "Named correlation coefficient (e.g., Pearson correlation = 0.45)"
+    
+    - pattern: |
+        [
+          {"LOWER": "r"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": {"REGEX": "pearson|spearman|kendall"}, "OP": "?"}
+        ]
+      description: "Simple correlation coefficient (e.g., r = 0.45)"
+
+  # Odds ratios
+  odds_ratio:
+    - pattern: |
+        [
+          {"LOWER": "or"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": "("},
+          {"TEXT": {"REGEX": "\\d+"}},
+          {"TEXT": "%"},
+          {"TEXT": "CI"},
+          {"TEXT": ":"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Odds ratio with confidence interval (e.g., OR = 2.34 (95% CI: 1.23, 3.45))"
+
+  # Confidence intervals
+  confidence_interval:
+    - pattern: |
+        [
+          {"TEXT": "("},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Simple confidence interval (e.g., (1.23, 3.45))"
+    
+    - pattern: |
+        [
+          {"LOWER": "confidence"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "interval"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "was"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "("},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Confidence interval with text (e.g., confidence interval was (1.23, 3.45))"
+
+  # Effect sizes
+  effect_size:
+    - pattern: |
+        [
+          {"LOWER": "cohen"},
+          {"TEXT": "'s"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "d"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": {"REGEX": "\\d+"}},
+          {"TEXT": "%"},
+          {"TEXT": "CI"},
+          {"TEXT": ":"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "Cohen's d effect size with confidence interval (e.g., Cohen's d = 0.82, 95% CI: 0.45, 1.19)"
+    
+    - pattern: |
+        [
+          {"LOWER": "hedges"},
+          {"TEXT": "'s"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "g"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "was", "OP": "?"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": "("},
+          {"TEXT": "SE"},
+          {"TEXT": "="},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Hedges' g effect size with standard error (e.g., Hedges' g was 0.75 (SE = 0.12))"
+    
+    - pattern: |
+        [
+          {"LOWER": "hedges"},
+          {"TEXT": "'s"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "g"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": "("},
+          {"TEXT": "SE"},
+          {"TEXT": "="},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Hedges' g effect size with standard error (e.g., Hedges' g = 0.75 (SE = 0.12))"
+    
+    - pattern: |
+        [
+          {"LOWER": "d"},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "Simple effect size d (e.g., d = 0.50)"
+
+  # Regression coefficients
+  regression_coef:
+    - pattern: |
+        [
+          {"LOWER": {"REGEX": "β|beta"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": "("},
+          {"LOWER": "t"},
+          {"TEXT": "="},
+          {"LIKE_NUM": true},
+          {"TEXT": ","},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LOWER": "p"},
+          {"TEXT": {"REGEX": "[<>=]|≤|≥"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true},
+          {"TEXT": ")"}
+        ]
+      description: "Regression coefficient with t-statistic and p-value (e.g., β = 0.45 (t = 2.34, p < 0.05))"
+
+  # R-squared values
+  r_squared:
+    - pattern: |
+        [
+          {"LOWER": {"REGEX": "r2|r-squared|r squared"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "R-squared value (e.g., R2 = 0.45)"
+
+  # Sample sizes
+  sample_size:
+    - pattern: |
+        [
+          {"LOWER": {"REGEX": "n|sample size"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"IS_DIGIT": true}
+        ]
+      description: "Sample size (e.g., n = 100)"
+
+  # Standard errors
+  standard_error:
+    - pattern: |
+        [
+          {"LOWER": {"REGEX": "se|standard error"}},
+          {"IS_SPACE": true, "OP": "?"},
+          {"TEXT": "="},
+          {"IS_SPACE": true, "OP": "?"},
+          {"LIKE_NUM": true}
+        ]
+      description: "Standard error (e.g., SE = 0.45)" 
